@@ -1,0 +1,152 @@
+<html>
+  <head>
+    <script type="text/javascript">
+
+    // Your Client ID can be retrieved from your project in the Google
+    // Developer Console, https://console.developers.google.com
+    var CLIENT_ID = TODO;
+    var SCOPES = [
+      'https://www.googleapis.com/auth/tagmanager.manage.accounts',
+      'https://www.googleapis.com/auth/tagmanager.edit.containers',
+      'https://www.googleapis.com/auth/tagmanager.delete.containers',
+      'https://www.googleapis.com/auth/tagmanager.edit.containerversions',
+      'https://www.googleapis.com/auth/tagmanager.manage.users',
+      'https://www.googleapis.com/auth/tagmanager.publish'
+    ];
+
+    // Parameter values used by the script
+    ACCOUNT_PATH = TODO; // such as: 'accounts/555555';
+    CONTAINER_NAME = 'Greetings';
+    WORKSPACE_NAME = 'Example workspace';
+
+    /**
+     * Check if current user has authorization for this application.
+     *
+     * @param {bool} immediate Whether login should use the "immediate mode", which
+     *     causes the security token to be refreshed behind the scenes with no UI.
+     */
+    function checkAuth(immediate) {
+      var authorizeCheckPromise = new Promise((resolve) => {
+        gapi.auth.authorize(
+          { client_id: CLIENT_ID, scope: SCOPES.join(' '), immediate: immediate },
+          resolve);
+      });
+      authorizeCheckPromise
+          .then(handleAuthResult)
+          .then(loadTagManagerApi)
+          .then(runTagManagerExample)
+          .catch(() => {
+            console.log('You must authorize any access to the api.');
+          });
+    }
+
+    /**
+     * Check if current user has authorization for this application.
+     */
+    function checkAuth() {
+      checkAuth(true);
+    }
+
+    /**
+     * Initiate auth flow in response to user clicking authorize button.
+     *
+     * @param {Event} event Button click event.
+     * @return {boolean} Returns false.
+     */
+    function handleAuthClick(event) {
+      checkAuth();
+      return false;
+    }
+
+    /**
+     * Handle response from authorization server.
+     *
+     * @param {Object} authResult Authorization result.
+     * @return {Promise} A promise to call resolve if authorize or redirect to a
+     *   login flow.
+     */
+    function handleAuthResult(authResult) {
+      return new Promise((resolve, reject) => {
+        var authorizeDiv = document.getElementById('authorize-div');
+        if (authResult && !authResult.error) {
+          // Hide auth UI, then load client library.
+          authorizeDiv.style.display = 'none';
+          resolve();
+        } else {
+          // Show auth UI, allowing the user to initiate authorization by
+          // clicking authorize button.
+          authorizeDiv.style.display = 'inline';
+          reject();
+        }
+      });
+    }
+
+    /**
+     * Load Tag Manager API client library.
+     *
+     * @return {Promise} A promise the load the Tag Manager API library.
+     */
+    function loadTagManagerApi() {
+      return new Promise((resolve, reject) => {
+        console.log('Load Tag Manager api');
+        gapi.client.load('tagmanager', 'v2', resolve);
+      });
+    }
+
+    /**
+     * Interacts with the tagmanager api v2 to create a container, workspace,
+     * trigger, and tag.
+     *
+     * @return {Promise} A promise to run the Tag Manager example.
+     */
+    function runTagManagerExample() {
+      return new Promise((resolve, reject) => {
+        console.log('Running Tag Manager Example.');
+        resolve();
+      });
+    }
+
+    /**
+     * Logs an error message to the console.
+     *
+     * @param {string|Object} error The error to log to the console.
+     */
+    function handleError(error) {
+      console.log('Error when interacting with GTM API');
+      console.log(error);
+    }
+
+    /**
+     * Wraps an API request into a promise.
+     *
+     * @param {Object} a request to the API.
+     * @return {Promise} A promise to execute the API request.
+     */
+    function requestPromise(request) {
+      return new Promise((resolve, reject) => {
+        request.execute((response) => {
+          if (response.code) {
+            reject(response);
+          }
+          resolve(response);
+        });
+      });
+    }
+    </script>
+
+    <script src="https://apis.google.com/js/client.js?onload=checkAuth">
+    </script>
+  </head>
+  <body>
+    <div id="authorize-div" style="display: none">
+      <span>Authorize access to Tag Manager API</span>
+      <!--Button for the user to click to initiate auth sequence -->
+      <button id="authorize-button" onclick="handleAuthClick(event)">
+        Authorize
+      </button>
+    </div>
+    <pre id="output"></pre>
+  </body>
+</html>
+
+    
